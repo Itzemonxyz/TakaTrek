@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">টাকাট্রেক</string>
+    <string name="no_goals_message">এখনও কোনো সঞ্চয়ের লক্ষ্য নেই। একটি যোগ করুন!</string>
+    <string name="add_goal">লক্ষ্য যোগ করুন</string>
+    <string name="analytics">বিশ্লেষণ</string>
+    <string name="saved">সঞ্চিত:</string>
+    <string name="target">লক্ষ্য:</string>
+</resources>

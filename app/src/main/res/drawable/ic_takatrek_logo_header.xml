@@ -1,0 +1,50 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="80dp"
+    android:viewportWidth="300"
+    android:viewportHeight="80">
+
+    <!-- "T" -->
+    <path
+        android:fillColor="#1A237E"
+        android:pathData="M 10 25 H 40 V 32 H 28 V 60 H 22 V 32 H 10 Z" />
+
+    <!-- "a" -->
+    <path
+        android:fillColor="#1A237E"
+        android:fillType="evenOdd"
+        android:pathData="M 65 60 V 45 C 65 38 52 38 48 43 L 52 47 C 55 43 59 43 59 45 V 48 C 50 48 43 51 45 56 C 46 60 55 62 59 57 V 60 H 65 M 59 50 V 53 C 56 56 50 55 50 53 C 50 51 51 51 59 50 Z" />
+
+    <!-- "k" -->
+    <path
+        android:fillColor="#1A237E"
+        android:pathData="M 70 25 V 60 H 76 V 45 L 85 35 H 92 L 82 45 L 94 60 H 87 L 76 46 V 60 H 70 Z" />
+
+    <!-- "a" -->
+    <path
+        android:fillColor="#1A237E"
+        android:fillType="evenOdd"
+        android:pathData="M 112 60 V 45 C 112 38 99 38 95 43 L 99 47 C 102 43 106 43 106 45 V 48 C 97 48 90 51 92 56 C 93 60 102 62 106 57 V 60 H 112 M 106 50 V 53 C 103 56 97 55 97 53 C 97 51 98 51 106 50 Z" />
+
+    <!-- "T" -->
+    <path
+        android:fillColor="#009688"
+        android:pathData="M 130 25 H 160 V 32 H 148 V 60 H 142 V 32 H 130 Z" />
+
+    <!-- "r" -->
+    <path
+        android:fillColor="#009688"
+        android:pathData="M 165 42 H 171 V 47 C 174 40 183 40 186 45 L 182 50 C 180 47 175 47 171 51 V 60 H 165 Z" />
+
+    <!-- "e" -->
+    <path
+        android:fillColor="#009688"
+        android:fillType="evenOdd"
+        android:pathData="M 190 50 C 188 40 202 38 208 45 V 52 H 195 C 195 57 202 57 205 53 L 209 56 C 206 62 190 61 190 50 M 195 48 H 204 C 203 44 197 44 195 48 Z" />
+
+    <!-- Accent Mark -->
+    <path
+        android:fillColor="#009688"
+        android:pathData="M 235 60 L 235 25 L 245 25 L 245 40 L 260 20 L 275 20 L 255 45 L 275 60 L 260 60 L 245 45 L 245 60 Z" />
+
+</vector>

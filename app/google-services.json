@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "660221168791",
+    "project_id": "taka-trek",
+    "storage_bucket": "taka-trek.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660221168791:android:0c5839702cfc7b2451add2",
+        "android_client_info": {
+          "package_name": "TakaTrek.App"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "660221168791-e9rur8c6gs9nt1aovb41g8l3bkjh9fnq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvLqeGRRYTiXlAA0jNKMggBEyotGQo10o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "660221168791-e9rur8c6gs9nt1aovb41g8l3bkjh9fnq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

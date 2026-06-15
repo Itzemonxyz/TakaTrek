@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">TakaTrek</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_goals_message">No savings goals yet. Add one!</string>
+    <string name="add_goal">Add Goal</string>
+    <string name="analytics">Analytics</string>
+    <string name="saved">Saved:</string>
+    <string name="target">Target:</string>
+    <string name="default_web_client_id">660221168791-e9rur8c6gs9nt1aovb41g8l3bkjh9fnq.apps.googleusercontent.com</string>
+</resources>
