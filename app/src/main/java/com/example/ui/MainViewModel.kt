@@ -55,6 +55,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isBiometricAuthenticated = MutableStateFlow(false)
     val isBiometricAuthenticated = _isBiometricAuthenticated.asStateFlow()
     
+    private val _savingTip = MutableStateFlow<String>("Loading insights...")
+    val savingTip = _savingTip.asStateFlow()
+    
+    fun generateTips() {
+        val goals = allGoals.value
+        if (goals.isEmpty()) {
+            _savingTip.value = "Add some savings goals to get personalized AI tips."
+            return
+        }
+        _savingTip.value = "Analyzing your savings data..."
+        viewModelScope.launch {
+            val totalTarget = goals.sumOf { it.targetAmount }
+            val totalSaved = goals.sumOf { it.currentAmount }
+            val formattedCategories = goals.map { it.category }.distinct().joinToString(", ")
+            val prompt = "Based on a total target of $totalTarget and current savings of $totalSaved across categories like $formattedCategories, provide some brief, encouraging financial tips."
+            _savingTip.value = com.example.api.GeminiHelper.generateContent(prompt)
+        }
+    }
+
     fun setBiometricAuthenticated(auth: Boolean) {
         _isBiometricAuthenticated.value = auth
     }

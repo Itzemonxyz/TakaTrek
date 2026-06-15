@@ -46,6 +46,11 @@ fun HomeScreen(
     val completedGoals = goals.filter { it.currentAmount >= it.targetAmount }
     val displayGoals = if (selectedTabIndex == 0) activeGoals else completedGoals
     val haptic = LocalHapticFeedback.current
+    val savingTip by viewModel.savingTip.collectAsStateWithLifecycle()
+
+    androidx.compose.runtime.LaunchedEffect(goals.isNotEmpty()) {
+        if (goals.isNotEmpty()) viewModel.generateTips()
+    }
 
     Scaffold(
         topBar = {
@@ -130,6 +135,37 @@ fun HomeScreen(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    item {
+                        ElevatedCard(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 8.dp),
+                            colors = CardDefaults.elevatedCardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.AutoAwesome, contentDescription = "AI Tip", tint = MaterialTheme.colorScheme.primary)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Gemini Insights", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(savingTip, style = MaterialTheme.typography.bodyMedium)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TextButton(
+                                    onClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        viewModel.generateTips()
+                                    },
+                                    modifier = Modifier.align(Alignment.End)
+                                ) {
+                                    Text("Refresh Insights")
+                                }
+                            }
+                        }
+                    }
                     items(displayGoals) { goal ->
                         GoalCard(goal = goal, isUsd = isUsd, onClick = { 
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)

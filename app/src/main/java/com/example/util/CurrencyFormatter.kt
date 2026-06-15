@@ -1,14 +1,18 @@
 package com.example.util
 
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 import java.util.Locale
 
 object CurrencyFormatter {
     fun formatCurrency(amount: Double, isUsd: Boolean): String {
-        val symbols = DecimalFormatSymbols(Locale.US)
-        val decimalFormat = DecimalFormat("#,##0.00", symbols)
-        val prefix = if (isUsd) "$" else "৳"
-        return prefix + decimalFormat.format(amount)
+        return if (isUsd) {
+            val format = NumberFormat.getCurrencyInstance(Locale.US)
+            format.format(amount)
+        } else {
+            val format = NumberFormat.getNumberInstance(Locale.US)
+            format.maximumFractionDigits = 2
+            format.minimumFractionDigits = 2
+            "৳ ${format.format(amount)}"
+        }
     }
 }

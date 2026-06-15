@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.secrets)
+  alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -106,6 +107,8 @@ dependencies {
   implementation(libs.okhttp)
   // implementation(libs.play.services.location)
   implementation(libs.retrofit)
+  implementation(libs.kotlinx.serialization.json)
+  implementation(libs.retrofit.converter.serialization)
   implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
   implementation("androidx.biometric:biometric:1.1.0")
   testImplementation(libs.androidx.compose.ui.test.junit4)
