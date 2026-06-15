@@ -36,6 +36,15 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <receiver android:name=".util.NotificationReceiver" android:exported="false" />
+        <receiver android:name=".widget.GoalWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
     </application>
 
 </manifest>

@@ -13,6 +13,10 @@ data class SavingsGoal(
     val depositFrequency: String, // "Weekly", "Monthly"
     val timestamp: Long = System.currentTimeMillis(),
     val category: String = "Other",
+    val isAutoDepositEnabled: Boolean = false,
+    val autoDepositDayOfMonth: Int = 1,
+    val contributorIds: List<String> = emptyList(),
+    val inviteCode: String = "",
     val isSynced: Boolean = false,
     val isDeleted: Boolean = false
 )

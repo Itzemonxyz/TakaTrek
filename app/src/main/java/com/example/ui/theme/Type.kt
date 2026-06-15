@@ -24,6 +24,7 @@ val outfitFontFamily = FontFamily(
 
 private val defaultTypography = Typography()
 
+// Uniformly applied across the entire Material 3 Typography scale
 val Typography = Typography(
     displayLarge = defaultTypography.displayLarge.copy(fontFamily = outfitFontFamily),
     displayMedium = defaultTypography.displayMedium.copy(fontFamily = outfitFontFamily),

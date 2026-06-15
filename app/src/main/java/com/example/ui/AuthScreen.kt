@@ -1,16 +1,20 @@
 package com.example.ui
 
 import android.app.Activity
-import android.util.Log
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -25,15 +29,19 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.FirebaseException
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalMaterial3Api::class)
+fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
 @Composable
 fun AuthScreen(onLoginSuccess: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("+880") }
+    var phoneNumber by remember { mutableStateOf("") }
     var otpCode by remember { mutableStateOf("") }
     var verificationId by remember { mutableStateOf<String?>(null) }
     
@@ -106,7 +114,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
     ) {
         Text(
             text = "TakaTrek",
-            style = MaterialTheme.typography.displaySmall,
+            style = MaterialTheme.typography.displayMedium,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = androidx.compose.ui.text.font.FontWeight.Black
         )
@@ -124,6 +132,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                 onValueChange = { email = it },
                 label = { Text("Email Address") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -133,6 +142,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                 label = { Text("Password") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -186,6 +196,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                 onValueChange = { phoneNumber = it },
                 label = { Text("Phone Number") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -194,10 +205,29 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     if (phoneNumber.isBlank()) return@Button
                     isLoading = true; errorMessage = null
+                    
+                    var formattedPhone = phoneNumber.trim()
+                    if (!formattedPhone.startsWith("+")) {
+                        if (formattedPhone.startsWith("880")) {
+                            formattedPhone = "+$formattedPhone"
+                        } else {
+                            if (formattedPhone.startsWith("0")) {
+                                formattedPhone = formattedPhone.substring(1)
+                            }
+                            formattedPhone = "+880$formattedPhone"
+                        }
+                    }
+
+                    val activity = context.findActivity()
+                    if (activity == null) {
+                        errorMessage = "Cannot find activity context"
+                        isLoading = false
+                        return@Button
+                    }
                     val options = PhoneAuthOptions.newBuilder(auth)
-                        .setPhoneNumber(phoneNumber)
+                        .setPhoneNumber(formattedPhone)
                         .setTimeout(60L, TimeUnit.SECONDS)
-                        .setActivity(context as Activity)
+                        .setActivity(activity)
                         .setCallbacks(phoneAuthCallback)
                         .build()
                     PhoneAuthProvider.verifyPhoneNumber(options)
@@ -221,6 +251,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                 onValueChange = { otpCode = it },
                 label = { Text("Enter OTP Code") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -241,6 +272,13 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
             ) {
                 Text("Verify OTP")
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            TextButton(onClick = { 
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                authMode = "PHONE"; errorMessage = null 
+            }) {
+                Text("Change Phone Number")
+            }
         }
 
         if (errorMessage != null) {
@@ -257,6 +295,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 isLoading = true; errorMessage = null
                 val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    // You must configure strings.xml with default_web_client_id
                     .requestIdToken(context.getString(R.string.default_web_client_id))
                     .requestEmail()
                     .build()
@@ -269,7 +308,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
             shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
         ) {
             Icon(
-                painter = androidx.compose.ui.res.painterResource(id = R.drawable.ic_google_logo),
+                painter = painterResource(id = R.drawable.ic_google_logo),
                 contentDescription = "Google Logo",
                 modifier = Modifier.size(24.dp),
                 tint = androidx.compose.ui.graphics.Color.Unspecified
@@ -280,7 +319,7 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
         
         Spacer(modifier = Modifier.height(12.dp))
         
-        TextButton(
+        OutlinedButton(
             onClick = {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 isLoading = true; errorMessage = null
@@ -289,7 +328,9 @@ fun AuthScreen(onLoginSuccess: () -> Unit) {
                     else errorMessage = task.exception?.message
                     isLoading = false
                 }
-            }
+            },
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
         ) {
             Text("Continue as Guest")
         }

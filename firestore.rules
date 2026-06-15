@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /goals/{goalId} {
+      // Any authenticated user can read a goal (necessary for looking up a goal by inviteCode)
+      allow read: if request.auth != null;
+
+      // Creating a goal: the creator must include themselves in the contributorIds
+      allow create: if request.auth != null 
+                    && request.auth.uid in request.resource.data.contributorIds;
+                    
+      // Updating a goal: allowed if the user is already a contributor,
+      // OR if they are joining a shared goal and adding their UID to contributorIds
+      allow update: if request.auth != null 
+                    && (request.auth.uid in resource.data.contributorIds 
+                        || request.auth.uid in request.resource.data.contributorIds);
+      
+      // Deleting a goal: user must currently be a contributor
+      allow delete: if request.auth != null 
+                    && request.auth.uid in resource.data.contributorIds;
+
+      // Transactions subcollection
+      match /transactions/{transactionId} {
+        // Can read/write transactions only if the user is a contributor to the parent goal
+        allow read, write: if request.auth != null 
+                           && request.auth.uid in get(/databases/$(database)/documents/goals/$(goalId)).data.contributorIds;
+      }
+    }
+  }
+}

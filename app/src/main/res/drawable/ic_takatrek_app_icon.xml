@@ -1,39 +1,17 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="512dp"
-    android:height="512dp"
-    android:viewportWidth="512"
-    android:viewportHeight="512">
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
 
-    <!-- Background -->
+    <!-- Background (solid Navy Blue) -->
     <path
-        android:fillColor="#0F172A"
-        android:pathData="M 110 0 H 402 A 110 110 0 0 1 512 110 V 402 A 110 110 0 0 1 402 512 H 110 A 110 110 0 0 1 0 402 V 110 A 110 110 0 0 1 110 0 Z" />
+        android:fillColor="#1A237E"
+        android:pathData="M 0 0 H 108 V 108 H 0 Z" />
 
-    <!-- Growth Bar 1 -->
+    <!-- Mountain/Trek and T shape (solid Teal) -->
     <path
-        android:fillColor="#22C55E"
-        android:pathData="M 156 250 H 176 A 16 16 0 0 1 192 266 V 324 A 16 16 0 0 1 176 340 H 156 A 16 16 0 0 1 140 324 V 266 A 16 16 0 0 1 156 250 Z" />
-
-    <!-- Growth Bar 2 -->
-    <path
-        android:fillColor="#22C55E"
-        android:pathData="M 246 190 H 266 A 16 16 0 0 1 282 206 V 324 A 16 16 0 0 1 266 340 H 246 A 16 16 0 0 1 230 324 V 206 A 16 16 0 0 1 246 190 Z" />
-
-    <!-- Growth Bar 3 -->
-    <path
-        android:fillColor="#22C55E"
-        android:pathData="M 336 120 H 356 A 16 16 0 0 1 372 136 V 324 A 16 16 0 0 1 356 340 H 336 A 16 16 0 0 1 320 324 V 136 A 16 16 0 0 1 336 120 Z" />
-
-    <!-- Trek Path -->
-    <path
-        android:strokeColor="#34D399"
-        android:strokeWidth="20"
-        android:strokeLineCap="round"
-        android:pathData="M 120 330 C 180 420 320 420 392 180" />
-
-    <!-- Goal -->
-    <path
-        android:fillColor="#ECFDF5"
-        android:pathData="M 392 158 A 22 22 0 1 1 392 202 A 22 22 0 1 1 392 158 Z" />
+        android:fillColor="#009688"
+        android:pathData="M 54 20 L 20 80 H 44 V 100 H 64 V 80 H 88 Z" />
 
 </vector>

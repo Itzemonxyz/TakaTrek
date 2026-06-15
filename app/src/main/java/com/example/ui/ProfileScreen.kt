@@ -16,6 +16,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
@@ -60,7 +64,8 @@ fun ProfileScreen(
             modifier = Modifier
                 .padding(padding)
                 .padding(24.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val photoUrl = user?.photoUrl
@@ -119,6 +124,22 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
             
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            val isAmoledDark by viewModel.isAmoledDark.collectAsStateWithLifecycle()
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Column {
+                    Text("AMOLED Dark Theme", style = MaterialTheme.typography.titleMedium)
+                    Text(if (isAmoledDark) "Enabled" else "Disabled", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Switch(checked = isAmoledDark, onCheckedChange = { 
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    viewModel.toggleAmoledDark() 
+                })
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
             HorizontalDivider()
             Spacer(modifier = Modifier.height(16.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -188,6 +209,71 @@ fun ProfileScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            val monthlyLimit by viewModel.monthlyLimit.collectAsStateWithLifecycle()
+            var monthlyLimitInput by remember(monthlyLimit) { mutableStateOf(monthlyLimit) }
+            
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text("Monthly Target Limit", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedTextField(
+                        value = monthlyLimitInput,
+                        onValueChange = { monthlyLimitInput = it },
+                        label = { Text("Amount limit") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        viewModel.updateMonthlyLimit(monthlyLimitInput)
+                    }) {
+                        Text("Save")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            var inviteCodeInput by remember { mutableStateOf("") }
+            var showInviteMessage by remember { mutableStateOf("") }
+            
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text("Join Shared Goal", style = MaterialTheme.typography.titleMedium)
+                if (showInviteMessage.isNotEmpty()) {
+                    Text(showInviteMessage, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    OutlinedTextField(
+                        value = inviteCodeInput,
+                        onValueChange = { inviteCodeInput = it },
+                        label = { Text("Enter Invite Code") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        if (inviteCodeInput.isNotBlank()) {
+                            viewModel.joinSharedGoal(inviteCodeInput.trim()) { success ->
+                                showInviteMessage = if (success) "Successfully joined!" else "Failed to join or code invalid."
+                                if (success) inviteCodeInput = ""
+                            }
+                        }
+                    }) {
+                        Text("Join")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
             OutlinedButton(
                 onClick = { 
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -197,6 +283,41 @@ fun ProfileScreen(
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
             ) {
                 Text("Export Savings History (.CSV)")
+            }
+
+            var showAboutDialog by remember { mutableStateOf(false) }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(
+                onClick = { 
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    showAboutDialog = true
+                },
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+            ) {
+                Text("Help & About")
+            }
+
+            if (showAboutDialog) {
+                AlertDialog(
+                    onDismissRequest = { showAboutDialog = false },
+                    title = { Text("TakaTrek") },
+                    text = {
+                        Column {
+                            Text("Version 1.0.0", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text("Features:", style = MaterialTheme.typography.titleSmall)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("• Personal & Shared Savings Goals\n• Automatic Syncing & Cloud Backup\n• Real-time Analytics & Charts\n• Customizable Reminders\n• AMOLED Dark Theme Support")
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showAboutDialog = false }) {
+                            Text("Close")
+                        }
+                    }
+                )
             }
             
             if (!isGuest) {

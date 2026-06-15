@@ -21,6 +21,9 @@ import java.util.Locale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
+import com.example.data.GoalCategory
+import androidx.compose.ui.Alignment
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddGoalScreen(
@@ -31,8 +34,9 @@ fun AddGoalScreen(
     var title by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
     var frequency by remember { mutableStateOf("Monthly") }
-    var category by remember { mutableStateOf("Other") }
-    val categories = listOf("Education", "Travel", "Emergency", "Home", "Gadget", "Other")
+    var category by remember { mutableStateOf(GoalCategory.OTHERS) }
+    var isAutoDepositEnabled by remember { mutableStateOf(false) }
+    var autoDepositDayOfMonth by remember { mutableStateOf("1") }
     val haptic = LocalHapticFeedback.current
 
     var showDatePicker by remember { mutableStateOf(false) }
@@ -210,16 +214,38 @@ fun AddGoalScreen(
             Text("Category", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                categories.forEach { cat ->
+                GoalCategory.values().forEach { cat ->
                     FilterChip(
                         selected = category == cat,
                         onClick = { 
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             category = cat 
                         },
-                        label = { Text(cat) },
+                        label = { Text(cat.displayName) },
+                        leadingIcon = { Icon(cat.icon, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                        colors = FilterChipDefaults.filterChipColors(selectedContainerColor = cat.color.copy(alpha = 0.2f), selectedLeadingIconColor = cat.color, selectedLabelColor = cat.color),
                         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                     )
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            OutlinedCard(modifier = Modifier.fillMaxWidth(), shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Text("Auto Deposit Simulator", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                        Switch(checked = isAutoDepositEnabled, onCheckedChange = { isAutoDepositEnabled = it })
+                    }
+                    if (isAutoDepositEnabled) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = autoDepositDayOfMonth,
+                            onValueChange = { autoDepositDayOfMonth = it },
+                            label = { Text("Day of month (1-31)") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
@@ -227,8 +253,9 @@ fun AddGoalScreen(
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     val target = amount.toDoubleOrNull() ?: 0.0
+                    val dayOfMonth = autoDepositDayOfMonth.toIntOrNull() ?: 1
                     if (title.isNotBlank() && target > 0) {
-                        viewModel.addGoal(title, target, selectedDateMillis, frequency, category)
+                        viewModel.addGoal(title, target, selectedDateMillis, frequency, category.name, isAutoDepositEnabled, dayOfMonth.coerceIn(1, 31))
                         val calendar = java.util.Calendar.getInstance()
                         calendar.set(java.util.Calendar.HOUR_OF_DAY, timePickerState.hour)
                         calendar.set(java.util.Calendar.MINUTE, timePickerState.minute)

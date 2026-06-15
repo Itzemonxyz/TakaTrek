@@ -9,10 +9,10 @@ object CurrencyFormatter {
             val format = NumberFormat.getCurrencyInstance(Locale.US)
             format.format(amount)
         } else {
-            val format = NumberFormat.getNumberInstance(Locale.US)
+            val format = NumberFormat.getCurrencyInstance(Locale("bn", "BD"))
             format.maximumFractionDigits = 2
             format.minimumFractionDigits = 2
-            "৳ ${format.format(amount)}"
+            format.format(amount)
         }
     }
 }

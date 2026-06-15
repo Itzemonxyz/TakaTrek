@@ -31,9 +31,25 @@ class MainActivity : FragmentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            androidx.core.app.ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
+        }
+    }
+    
+    val workRequest = androidx.work.PeriodicWorkRequestBuilder<com.example.worker.AutoDepositWorker>(1, java.util.concurrent.TimeUnit.DAYS)
+        .build()
+    androidx.work.WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+        "AutoDepositWorker",
+        androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+        workRequest
+    )
+
     enableEdgeToEdge()
     setContent {
-      MyApplicationTheme {
+      val isAmoledDark by viewModel.isAmoledDark.collectAsStateWithLifecycle()
+      MyApplicationTheme(isAmoledDark = isAmoledDark) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           TakaTrekApp(viewModel)
         }
@@ -95,7 +111,8 @@ fun TakaTrekApp(viewModel: MainViewModel) {
                 viewModel = viewModel,
                 onNavigateToAddGoal = { navController.navigate("add_goal") },
                 onNavigateToAnalytics = { goalId -> navController.navigate("analytics/$goalId") },
-                onNavigateToProfile = { navController.navigate("profile") }
+                onNavigateToProfile = { navController.navigate("profile") },
+                onNavigateToBadges = { navController.navigate("badges") }
             )
         }
         composable("profile") {
@@ -104,6 +121,13 @@ fun TakaTrekApp(viewModel: MainViewModel) {
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+        composable("badges") {
+            com.example.ui.BadgesScreen(
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
         composable("add_goal") {
             AddGoalScreen(
                 viewModel = viewModel,
